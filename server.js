@@ -83,7 +83,17 @@ const chooseEmployees = () => {
   
 };
 const userAddDepartment = () => {
-
+    inquirer.prompt([
+        {
+            type: 'input',
+            name: 'name',
+            message: 'What is the new department called?'
+        }
+    ])
+    .then(name => {
+        connection.query('INSERT INTO department SET ?', name);
+        chooseDepartments();
+    })
    
 };
 const userAddRole = () => {
