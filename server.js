@@ -1,22 +1,21 @@
 const inquirer = require('inquirer');
-const fs = require("fs");
+const fs = require('fs');
 const mysql = require('mysql2');
 require('console.table');
 
-var connect = mysql.createConnection({
+var connection = mysql.createConnection({
     host: 'localhost',
     user: 'root',
     database: 'employeeDb',
-    password: ''
 });
 
 const employeeMenu = () => {
     return inquirer.prompt([
         {
             type: 'list',
-            name: 'Menu',
+            name: 'menu',
             message: 'What would you like to do?',
-            choices: ['view all departments', 'view all roles', 'view all employees', 'add a department', 'add a role', 'add an employee', 'update an employee role', 'exit']
+            choices: ['View All Departments', 'View All Roles', 'View All Employees', 'Add A Department', 'Add A Role', 'Add An Employee', 'Update An Employee Role', 'exit']
         }])
         .then(userInput => {
             switch (userInput.menu) {
@@ -48,35 +47,55 @@ const employeeMenu = () => {
 };
 
 const chooseDepartments = () => {
-    connect.query(
+    connection.query(
         'SELECT * FROM department;',
         (err, results) => {
             console.table(results);
             employeeMenu();
-        });
+        })
 };
 
 const chooseRoles = () => {
+    connection.query(
+        'SELECT * FROM role;',
+        (err, results) => {
+            console.table(results);
+            employeeMenu();
+        })
 
-    employeeMenu()
 };
 const chooseEmployees = () => {
-
-    employeeMenu()
+    connection.query(
+        `SELECT * FROM employee
+        INNER JOIN role
+        ON employee.
+        role_id = role.id
+        LEFT JOIN
+        department
+        ON role.
+        department_id =
+        department.id;
+        `,
+        (err, results) => {
+            console.table(results);
+            employeeMenu();
+        })
+  
 };
 const userAddDepartment = () => {
 
-    employeeMenu()
+   
 };
 const userAddRole = () => {
 
-    employeeMenu()
+    
 };
 const userAddEmployee = () => {
 
-    employeeMenu()
+   
 };
 const userUpdateRole = () => {
 
-    employeeMenu()
+   
 };
+employeeMenu();
