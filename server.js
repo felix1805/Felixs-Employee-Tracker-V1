@@ -192,7 +192,47 @@ const userAddEmployee = () => {
         })
 };
 const userUpdateRole = () => {
+    connection.promise().query(`SELECT employee.id, CONCAT(employee.first_name,' ',employee.last_name) AS name FROM employee;`)
+        .then(([currentEmployees]) => {
+            let employeeSelect = currentEmployees.map(({
+                id,
+                name
+            }) => ({
+                name: name,
+                value: id
+            }));
+    connection.promise().query(`SELECT role.id, role.title FROM role;`)
+        .then(([presentRoles]) => {
+            let roleSelection = presentRoles.map(({
+                id,
+                title
+            }) => ({
+                name: title,
+                value: id
+            }));
+                    inquirer.prompt([
+                        {
+                            type: 'list',
+                            name: 'employeeSelect',
+                            message: 'Which employee should be selected?',
+                            choices: employeeSelect
+                        },
+                        {
+                            type: 'list',
+                            name: 'selectNewRole',
+                            message: 'What is the new role?',
+                            choices: roleSelection
+                        },
+                    ])
+                        .then(({employeeSelect, selectNewRole}) => {
+                            connection.query(`UPDATE employee SET role_id = ${selectNewRole} WHERE id = ${employeeSelect}`, {
+                                
+                            });
+                            chooseEmployees();
 
+                        })
+                })
+        });
 
 };
 employeeMenu();
