@@ -136,8 +136,60 @@ const userAddRole = () => {
         });
 };
 const userAddEmployee = () => {
-
-
+    connection.promise().query(`SELECT role.id, role.title FROM role;`)
+        .then(([employeeList]) => {
+            let rolesEmployees = employeeList.map(({
+                id,
+                title
+            }) => ({
+                value: id,
+                name: title
+            }))
+            connection.promise().query(`SELECT employee.id, CONCAT(employee.first_name,' ',employee.last_name) AS manager FROM employee;`)
+                .then(([newManagers]) => {
+                    let selectManager = newManagers.map(({
+                        id,
+                        manager
+                    }) => ({
+                        value: id,
+                        name: manager
+                    }));
+                    inquirer.prompt([
+                        {
+                            type: 'input',
+                            name: 'firstName',
+                            message: 'what is the first name of your new employee?'
+                        },
+                        {
+                            type: 'input',
+                            name: 'lastName',
+                            message: 'what is the last name of your new employee?'
+                        },
+                        {
+                            type: 'list',
+                            name: 'role',
+                            message: 'what is the roll of your new employee?',
+                            choices: rolesEmployees
+                        },
+                        {
+                            type: 'list',
+                            name: 'manager',
+                            message: 'Who is the new employees manager?',
+                            choices: selectManager
+                        }
+                    ])
+                        .then(({ firstName, lastName, role, manager }) => {
+                            connection.query(`INSERT INTO employee SET ?`, {
+                                first_Name: firstName,
+                                last_name: lastName,
+                                role_id: role,
+                                manager_id: manager
+                            });
+                            chooseEmployees()
+                        });
+                    ;
+                })
+        })
 };
 const userUpdateRole = () => {
 
