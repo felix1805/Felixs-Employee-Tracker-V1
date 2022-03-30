@@ -80,7 +80,7 @@ const chooseEmployees = () => {
             console.table(results);
             employeeMenu();
         })
-  
+
 };
 const userAddDepartment = () => {
     inquirer.prompt([
@@ -90,22 +90,57 @@ const userAddDepartment = () => {
             message: 'What is the new department called?'
         }
     ])
-    .then(name => {
-        connection.query('INSERT INTO department SET ?', name);
-        chooseDepartments();
-    })
-   
+        .then(name => {
+            connection.query('INSERT INTO department SET ?', name);
+            chooseDepartments();
+        })
+
 };
 const userAddRole = () => {
+    connection.promise().query(`SELECT department.id, department.name FROM department;`)
+        .then(([departmentList]) => {
+            let selectDepartment = departmentList.map(({
+                id,
+                name
+            }) => ({
+                name: name,
+                value: id
+            }));
+            inquirer.prompt([
+                {
+                    type: 'input',
+                    name: 'title',
+                    message: 'what is the new roll called?'
+                },
+                {
+                    type: 'input',
+                    name: 'salary',
+                    message: 'what is the new rolls salary?'
+                },
+                {
+                    type: 'list',
+                    name: 'department',
+                    message: 'what is the new rolls department?',
+                    choices: selectDepartment
+                }
+            ])
+                .then(({ title, department, salary }) => {
+                    connection.query(`INSERT INTO role SET ?`, {
+                        title: title,
+                        department_id: department,
+                        salary: salary
+                    });
+                    chooseRoles()
 
-    
+                })
+        });
 };
 const userAddEmployee = () => {
 
-   
+
 };
 const userUpdateRole = () => {
 
-   
+
 };
 employeeMenu();
